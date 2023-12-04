@@ -99,7 +99,7 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
   }
 
   return (
-    <Container maxW={'1200px'} p={5} my={5}>
+    <Container maxW={'1200px'} p={5} bg="gray.300">
       <SimpleGrid columns={2} spacing={6}>
         <Stack spacing={'20px'}>
           <Box borderRadius={'6px'} overflow={'hidden'}>
@@ -115,7 +115,7 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
             <Text fontWeight={'bold'}>Description:</Text>
             <Text>{nft.metadata.description}</Text>
           </Box>
-          <Box>
+          {/* <Box>
             <Text fontWeight={'bold'}>Traits:</Text>
             <SimpleGrid columns={2} spacing={4}>
               {Object.entries(nft?.metadata?.attributes || {}).map(
@@ -137,7 +137,7 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
                 )
               )}
             </SimpleGrid>
-          </Box>
+          </Box> */}
         </Stack>
 
         <Stack spacing={'20px'}>
@@ -210,35 +210,42 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
             }
           >
             <Stack spacing={5}>
-              <Web3Button
-                contractAddress={MARKETPLACE_ADDRESS}
-                action={async () => buyListing()}
-                isDisabled={
-                  (!auctionListing || !auctionListing[0]) &&
-                  (!directListing || !directListing[0])
-                }
-              >
-                Buy at asking price
-              </Web3Button>
-              <Text textAlign={'center'}>or</Text>
-              <Flex direction={'column'}>
-                <Input
-                  mb={5}
-                  defaultValue={
-                    auctionListing?.[0]?.minimumBidCurrencyValue
-                      ?.displayValue || 0
-                  }
-                  type={'number'}
-                  onChange={(e) => setBidValue(e.target.value)}
-                />
+              {((auctionListing && auctionListing[0]) ||
+                (directListing && directListing[0])) && (
                 <Web3Button
                   contractAddress={MARKETPLACE_ADDRESS}
-                  action={async () => await createBidOffer()}
-                  isDisabled={!auctionListing || !auctionListing[0]}
+                  action={async () => buyListing()}
+                  isDisabled={
+                    (!auctionListing || !auctionListing[0]) &&
+                    (!directListing || !directListing[0])
+                  }
                 >
-                  Place Bid
+                  Buy at given price
                 </Web3Button>
-              </Flex>
+              )}
+              {auctionListing && auctionListing[0] && (
+                <>
+                  <Text textAlign={'center'}>or</Text>
+                  <Flex direction={'column'}>
+                    <Input
+                      mb={5}
+                      defaultValue={
+                        auctionListing?.[0]?.minimumBidCurrencyValue
+                          ?.displayValue || 0
+                      }
+                      type={'number'}
+                      onChange={(e) => setBidValue(e.target.value)}
+                    />
+                    <Web3Button
+                      contractAddress={MARKETPLACE_ADDRESS}
+                      action={async () => await createBidOffer()}
+                      isDisabled={!auctionListing || !auctionListing[0]}
+                    >
+                      Place Bid
+                    </Web3Button>
+                  </Flex>
+                </>
+              )}
             </Stack>
           </Skeleton>
         </Stack>
